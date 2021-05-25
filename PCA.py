@@ -65,6 +65,7 @@ def eig(cov, train, n_dim):
 if __name__ == "__main__":
     path = os.listdir("dataSet/AFLW")
     train = Load_data(path)
+    print(train.shape)
     train = zero_center(train)
     cov = cov(train)
     data_ndim = eig(cov, train, 30)
