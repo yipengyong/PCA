@@ -1,49 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import load_data
+
+
+data_path = os.listdir("dataSet/AFLW")
+label_path = 'dataSet/label.txt'
 
 
 def load_data(path):
-    data = open(path, encoding="utf-8")
-
-    tem = []
-    for line in data.readlines():
-        tem.append(np.array(list(map(float, line.split()))))
-    data.close
-    X = []
-    Y = []
-    X1 = []
-    X2 = []
-    tem = np.array(tem)
-    for i in range(len(tem)):
-        X.append(tem[i][0:2])
-        Y.append(tem[i][2])
-        X1.append(tem[i][0])
-        X2.append(tem[i][1])
-
-    X = np.array(X)
-    Y = np.array(Y)
-    X1 = np.array(X1)
-    X2 = np.array(X2)
-    # print(tem)
-
-    return X, Y, X1, X2
+    data = np.loadtxt(path, dtype=np.float32)
+    return data
 
 
-X, Y, X1, X2 = load_data("数据集/train.txt")
+sourcetrain, Y= load_data.load_data(data_path, label_path)
+X = load_data("result.txt")
+
+
 Y = Y.reshape(1, Y.shape[0])
 
-X = X.T
-X1 = X1.T
-X2 = X2.T
-# x, y, z = X1, X2, Y
-# ax = plt.subplot(111, projection='3d')  # 创建一个三维的绘图工程
-# #  将数据点分成三部分画，在颜色上有区分度
-# ax.scatter(x, y, z, c='r')  # 绘制数据点
-# ax.set_zlabel('Y')  # 坐标轴
-# ax.set_ylabel('X2')
-# ax.set_xlabel('X1')
-# plt.show()
-#
+# X = X.T
+
 
 def ini(n_x, n_h1, n_h2, n_y):
     """
@@ -299,11 +275,4 @@ Y_pred = predict(X_test, parameters)
 print(Y_test)
 Y_test = Y_test.reshape(1, Y_test.shape[0])
 
-plt.figure()
-ax = plt.subplot(111, projection='3d')  # 创建一个三维的绘图工程
-ax.scatter(X1_test, X2_test , Y_pred, c='r')  # 绘制数据点
-ax.set_zlabel('Y')  # 坐标轴
-ax.set_ylabel('X2')
-ax.set_xlabel('X1')
-ax.scatter(X1_test, X2_test , Y_test, c='g')  # 绘制数据点
-plt.show()
+
