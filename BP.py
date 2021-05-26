@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import load_data
-
+import Load_data
+import os
 
 data_path = os.listdir("dataSet/AFLW")
 label_path = 'dataSet/label.txt'
@@ -12,13 +12,15 @@ def load_data(path):
     return data
 
 
-sourcetrain, Y= load_data.load_data(data_path, label_path)
-X = load_data("result.txt")
+sourcetrain, sourceY = Load_data.load_data(data_path, label_path)
+X = load_data("train.txt")
 
+train_index = list(np.loadtxt('train_index.txt', dtype=int))
 
-Y = Y.reshape(1, Y.shape[0])
+Y = sourceY[:, train_index]
 
-# X = X.T
+X = X.T
+Y = Y.reshape(1, Y.shape[1])
 
 
 def ini(n_x, n_h1, n_h2, n_y):
@@ -84,8 +86,12 @@ def forward(X, parameters):
     # 隐藏二层 -> 输出层
     z3 = np.dot(w3, A2) + b3
     # print(z3)
-    A3 = z3
-
+    A3 = sigmoid(z3) + 1
+    # for i in range(len(A3[0])):
+    #     if A3[0][i] >= 1.5:
+    #         A3[0][i] = 2
+    #     else:
+    #         A3[0][i] = 1
     cache = {
         'z1': z1,
         'z2': z2,
@@ -108,6 +114,7 @@ def loss(A3, Y):
     """
     # 样本个数
     m = Y.shape[1]
+
     # print(A3)
     # cross_entropy = -(Y * np.log(A3) + (1 - Y) * np.log(1 - A3))
     # print(Y.shape)
@@ -252,7 +259,7 @@ def nn_model(X, Y, n_h1=3, n_h2=3, num_iterations=200, learning_rate=0.1):
 
 
 # 训练
-parameters = nn_model(X, Y, n_h1=15, n_h2=15, num_iterations=5000, learning_rate=0.2)
+parameters = nn_model(X, Y, n_h1=15, n_h2=15, num_iterations=100000, learning_rate=0.2)
 
 
 # 预测
@@ -267,12 +274,27 @@ def predict(X, parameters):
     return Y_pred
 
 
-X_test, Y_test, X1_test, X2_test = load_data('数据集/train.txt')
+X_test = load_data("test.txt")
 X_test = X_test.T
-X1_test = X1_test.T
-X2_test = X2_test.T
+test_index = list(np.loadtxt('test_index.txt', dtype=int))
+Y_test = sourceY[:, test_index]
+Y_test = Y_test.reshape(1, Y_test.shape[1])
+# X_test, Y_test, X1_test, X2_test = load_data('数据集/train.txt')
+# X_test = X_test.T
+# X1_test = X1_test.T
+# X2_test = X2_test.T
 Y_pred = predict(X_test, parameters)
-print(Y_test)
-Y_test = Y_test.reshape(1, Y_test.shape[0])
 
-
+Y_pred = Y_pred.reshape(1, Y_pred.shape[1])
+for i in range(len(Y_pred[0])):
+    if Y_pred[0][i] >= 1.5:
+        Y_pred[0][i] = 2
+    else:
+        Y_pred[0][i] = 1
+print(Y_pred)
+wrongnum = 0
+for i in range(len(Y_pred[0])):
+    if Y_pred[0][i] != Y_test[0][i]:
+        wrongnum += 1
+print(wrongnum)
+# Y_test = Y_test.reshape(1, Y_test.shape[0])
