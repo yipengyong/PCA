@@ -1,6 +1,7 @@
 # PCA
 PCA_face
 ***
+## python 3.8 / Anaconda3
 ## Data split
 train:test = 7:3
 code is in data_split.py
